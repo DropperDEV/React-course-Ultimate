@@ -143,12 +143,13 @@ function getBook(id) {
   return data.find((d) => d.id === id);
 }
 
-const book1 = getBook(1);
-
-const { genres, title, author, publicationDate, pages, hasMovieAdaptation } = book1;
+/**  const book1 = getBook(4);
+// DESTRUCTRING 
+const { genres, title, author, publicationDate, pages, hasMovieAdaptation } =
+  book1;
 
 // REST cria um array que contém o resto de atributos de um objeto, ou cria um array com diversos parametros
-const [genrePrimary, generosecundario, ...resto] = genres
+const [genrePrimary, generosecundario, ...resto] = genres;
 //  console.log(resto)
 
 //SPREAD
@@ -159,6 +160,79 @@ const newUpdate = {
   newGenre: ["Epic fantasy", ...genres],
 };
 
-const summary = `${title}, a ${pages}-page long book, was written by ${author} and published in ${publicationDate.split(",")} and ${hasMovieAdaptation ? "was" : "wasn't"} public ${hasMovieAdaptation ? "in " + newUpdate.moviePublicationData : "yet"}`;
+// TEMPLATE STRING
 
-console.log(summary)
+const summary = `${title}, a ${pages}-page long book, was written by ${author} and published in ${publicationDate.split(
+  ","
+)} and ${hasMovieAdaptation ? "was" : "wasn't"} public ${
+  hasMovieAdaptation ? "in " + newUpdate.moviePublicationData : "yet"
+}`;
+
+//console.log(summary)
+
+// ARROW FUNCTIONS
+
+const GetYear = (str) => str.split(",")[0];
+
+// When needed to use scope and function body, use return.
+// const GetYear = (str) =>  {
+//   return str.split(",")[0]
+// }
+
+// console.log(GetYear(publicationDate));
+
+// They all read in left-right direction
+// || referred to 'or' need one argument to be true to print
+//console.log(hasMovieAdaptation || 'no have')
+
+// &&  referred to 'and' need two or more arguments be true to print
+//console.log('' && 0)
+
+// ?? Nullish coallescing referred when the first argument are null or undefined, call the second one.
+//console.log(null ?? hasMovieAdaptation)
+*/
+function GetTotalReviewCount(book1) {
+  // if the first setence is undefined or null will the value be 0
+  const goodreads = book1.reviews?.goodreads?.reviewsCount ?? 0;
+  // ?. check if exist and if not will turn undefined.
+  const librarything = book1.reviews?.librarything?.reviewsCount ?? 0;
+  return goodreads + librarything;
+}
+
+//console.log(GetTotalReviewCount(book1));
+
+const books = getBooks();
+
+const x = [1, 2, 3, 4, 5].map((i) => i * 3);
+//console.log(x);
+
+const alltitltes = books.map((book) => book.title);
+//console.log(alltitltes);
+
+const EssentialData = books.map((book) => ({
+  title: book.title,
+  author: book.author,
+  reviewCount: GetTotalReviewCount(book),
+}));
+
+//console.log(EssentialData);
+
+const LongBooksWithMovie = books
+  .filter((book) => book.pages > 500)
+  .filter((book) => book.hasMovieAdaptation);
+// console.log(LongBooksWithMovie);
+
+const AdventureBooks = books.filter((book) =>
+  book.genres.includes("adventure")
+);
+//console.log(AdventureBooks)
+
+const pagesAllBooks = books.reduce((acc, books) => acc + books.pages, 0);
+//console.log(pagesAllBooks)
+
+const arr = [3, 4, 10, 2, 6, 8, 1];
+const sorted = arr.slice().sort((a, b) => a - b);
+// console.log(sorted)
+
+const sortedPagesbyValue = books.slice().sort((a, b) => a.pages - b.pages)
+console.log(sortedPagesbyValue)
