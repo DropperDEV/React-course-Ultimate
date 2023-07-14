@@ -4,6 +4,34 @@ import "./index.css";
 import "./style.css";
 import img from "./img.jpg";
 
+const skillData = [
+  {
+    skill: "HTML+CSS",
+    level: "advanced",
+    color: "#f27413",
+  },
+  {
+    skill: "Javascript",
+    level: "advanced",
+    color: "#fae20a",
+  },
+  {
+    skill: "Web Design",
+    level: "advanced",
+    color: "#23f50c",
+  },
+  {
+    skill: "Svelte",
+    level: "beginner",
+    color: "#ff1414",
+  },
+  {
+    skill: "Git and Github",
+    level: "intermediate",
+    color: "#e84e33",
+  },
+];
+
 function App() {
   return (
     <main className="container">
@@ -29,31 +57,42 @@ function Img(props) {
 }
 
 function Text(props) {
+  const skills = skillData;
+  const skillsNum = skills.length;
   return (
     <div className="container-divText">
       <h1 className="container-divText-title">{props.name}</h1>
       <p className="container-divText-paragraph">{props.paragraph}</p>
-      <div className="container-divText-containerFeatures">
-        <Features features={{ color: "yellow", text: "JAVASCRIPT", emoji: "💪" }} />
-        <Features features={{ color: "blue", text: "HTML+CSS", emoji: "💪" }} />
-        <Features features={{ color: "green", text: "Web Design", emoji: "💪" }} />
-        <Features features={{ color: "pink", text: "Git and Github", emoji: "👍" }} />
-        <Features features={{ color: "cyan", text: "REACT", emoji: "💪" }} />
-        <Features features={{ color: "red", text: "REACT", emoji: "Svelte👶" }} />
-      </div>
+      {skillsNum > 0 ? (
+        <div className="container-divText-containerFeatures">
+          {skills.map((hability) => (
+            <Features
+              skill={hability.skill}
+              key={hability.name}
+              color={hability.color}
+              level={hability.level}
+            />
+          ))}
+        </div>
+      ) : (
+        <p>"No habilitys has been declared"</p>
+      )}
     </div>
   );
 }
 
-function Features(props) {
-  const { color, text, emoji } = props.features;
+function Features({ skill, color, level }) {
   return (
     <div
       className="container-divText-containerFeatures-component"
       style={{ backgroundColor: color }}
     >
-      <p>{text}</p>
-      <span>{emoji}</span>
+      <p>{skill}</p>
+      <span>
+        {level === "beginner" && "👶"}
+        {level === "intermediate" && "👍"}
+        {level === "advanced" && "💪"}
+      </span>
     </div>
   );
 }
