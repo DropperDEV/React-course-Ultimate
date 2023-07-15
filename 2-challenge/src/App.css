@@ -1,0 +1,24 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  margin-top: 12rem;
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  gap: 2rem;
+  font-size: 2.5rem;
+  font-family: monospace;
+  align-items: center;
+}
+
+.container button {
+  padding: 1rem;
+}
+
+.top-wrapper {
+  display: flex;
+}
