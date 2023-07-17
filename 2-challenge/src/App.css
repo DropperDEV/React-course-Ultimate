@@ -15,8 +15,9 @@ body {
   align-items: center;
 }
 
-.container button {
+.button {
   padding: 1rem;
+  font-size: 1.5rem;
 }
 
 .top-wrapper {
