@@ -38,49 +38,25 @@ export default function App() {
               3
             </div>
           </div>
-          <Message step={step}>
-            <p>{messages[step - 1]}</p>
-            <div className="buttons">
-              <Button
-                bgColor="#e7e7e7"
-                OnClick={() => alert(messages[step - 1])}
-                textColor="#333"
-              >
-                Learn how
-              </Button>
-            </div>
-          </Message>
+          <p className="message">
+            Step {step}: {messages[step - 1]}
+          </p>
           <div className="buttons">
-            <Button bgColor="#7950f2" textColor="#FFF" OnClick={handlePrevious}>
-              <span>👈</span> Previous
-            </Button>
-            <Button bgColor="#7950f2" textColor="#FFF" OnClick={handleNext}>
-              Next<span>👉</span>
-            </Button>
+            <button
+              style={{ backgroundColor: "#7950f2", color: "#FFF" }}
+              onClick={handlePrevious}
+            >
+              Previous
+            </button>
+            <button
+              style={{ backgroundColor: "#7950f2", color: "#FFF" }}
+              onClick={handleNext}
+            >
+              Next
+            </button>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-function Message({ step, children }) {
-  return (
-    <div className="message">
-      {" "}
-      <h3>Step {step}: </h3>
-      {children}
-    </div>
-  );
-}
-
-function Button({ bgColor, textColor, OnClick, children }) {
-  return (
-    <button
-      style={{ backgroundColor: bgColor, color: textColor }}
-      onClick={OnClick}
-    >
-      {children}
-    </button>
   );
 }
