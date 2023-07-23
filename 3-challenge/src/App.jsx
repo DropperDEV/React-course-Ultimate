@@ -19,9 +19,8 @@ export default function App() {
     }
   };
 
-  const sum = percentages.reduce((acc, val) => acc + val, 0);
-  const media = percentages.length > 0 ? sum / percentages.length : 0;
-  const total = bill + (bill * media) / 100;
+  const tip = percentages.reduce((acc, val) => acc + val, 0);
+  const media = percentages.length > 0 ? tip / percentages.length : 0;
 
   return (
     <main>
@@ -32,7 +31,7 @@ export default function App() {
       <PercentageInput OnAddPercent={(value) => handleAddPercentage(1, value)}>
         <p>How did your friend like the service?</p>
       </PercentageInput>
-      <Output bill={bill} total={total} sum={sum} />
+      <Output bill={bill} tip={tip} />
       <ResetButton OnReset={() => { setBill(0); setPercentages([]); }} />
     </main>
   );
@@ -67,8 +66,8 @@ function PercentageInput({ OnAddPercent, children }) {
   );
 }
 
-function Output({ bill, total, sum }) {
-  return <h1>{`You pay $${total.toFixed()} ($${bill} + ${sum}) tip`}</h1>;
+function Output({ bill, total, tip }) {
+  return <h1>{`You pay $${bill+tip} ($${bill} + ${tip}) tip`}</h1>;
 }
 
 function ResetButton({ OnReset }) {
