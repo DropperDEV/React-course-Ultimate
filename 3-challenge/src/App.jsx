@@ -20,7 +20,6 @@ export default function App() {
   };
 
   const tip = percentages.reduce((acc, val) => acc + val, 0);
-  const media = percentages.length > 0 ? tip / percentages.length : 0;
 
   return (
     <main>
