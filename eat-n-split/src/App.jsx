@@ -23,45 +23,68 @@ const initialFriends = [
 
 export default function App() {
   const [showAddFriend, setShowAddFriend] = useState(false);
-  const [friends, setFriends] = useState(initialFriends)
-  const [selectFriend, setSelectFriend] = useState(null)
-  function handleAddFriend(friend){
-    setFriends(friends => [...friends, friend])
-    setShowAddFriend(false)
+  const [friends, setFriends] = useState(initialFriends);
+  const [selectFriend, setSelectFriend] = useState(null);
+  function handleAddFriend(friend) {
+    setFriends((friends) => [...friends, friend]);
+    setShowAddFriend(false);
   }
-  function handleSelection(friend){
-    setSelectFriend(cur => cur?.id === friend.id ? null : friend )
-    setShowAddFriend(false)
-
+  function handleSelection(friend) {
+    setSelectFriend((cur) => (cur?.id === friend.id ? null : friend));
+    setShowAddFriend(false);
+  }
+  function handleSplitBill(value) {
+    setFriends((friends) =>
+      friends.map((friend) =>
+        friend.id === selectFriend.id
+          ? { ...friend, balance: friend.balance + value }
+          : friend
+      )
+    );
+    setSelectFriend(null)
   }
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendList friends={friends} onSelection={handleSelection} selectFriend={selectFriend} />
-        {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend}  />}
+        <FriendList
+          friends={friends}
+          onSelection={handleSelection}
+          selectFriend={selectFriend}
+        />
+        {showAddFriend && <FormAddFriend onAddFriend={handleAddFriend} />}
         <Button OnToggle={() => setShowAddFriend(!showAddFriend)}>
           {showAddFriend ? "Close" : "Add friend"}
         </Button>
       </div>
-      {selectFriend && <FormSplitBill selectFriend={selectFriend} />}
+      {selectFriend && (
+        <FormSplitBill
+          selectFriend={selectFriend}
+          onSplitBill={handleSplitBill}
+        />
+      )}
     </div>
   );
 }
 
-function FriendList({friends, onSelection, selectFriend}) {
+function FriendList({ friends, onSelection, selectFriend }) {
   return (
     <ul>
       {friends.map((friend) => (
-        <Friend friend={friend} key={friend.id} onSelection={onSelection} selectFriend={selectFriend}/>
+        <Friend
+          friend={friend}
+          key={friend.id}
+          onSelection={onSelection}
+          selectFriend={selectFriend}
+        />
       ))}
     </ul>
   );
 }
 
 function Friend({ friend, onSelection, selectFriend }) {
-  const isSelect = selectFriend?.id === friend.id
+  const isSelect = selectFriend?.id === friend.id;
   return (
-    <li className={isSelect && "selected"}>
+    <li className={isSelect ? "selected" : ""}>
       <img src={friend.image} alt={friend.name} />
       <h3>{friend.name}</h3>
       {friend.balance < 0 && (
@@ -75,14 +98,14 @@ function Friend({ friend, onSelection, selectFriend }) {
         </p>
       )}
       {friend.balance === 0 && <p>You and {friend.name} are even</p>}
-      <Button OnToggle={()=> onSelection(friend)}>Select</Button>
+      <Button OnToggle={() => onSelection(friend)}>Select</Button>
     </li>
   );
 }
 
-function FormAddFriend({onAddFriend}) {
+function FormAddFriend({ onAddFriend }) {
   const [name, setName] = useState("");
-  const [image, setImage] = useState('https://i.pravatar.cc/48');
+  const [image, setImage] = useState("https://i.pravatar.cc/48");
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -97,40 +120,77 @@ function FormAddFriend({onAddFriend}) {
       balance: 0,
     };
 
-    onAddFriend(NewFriend)
+    onAddFriend(NewFriend);
 
-    setName("")
-    setImage('https://i.pravatar.cc/48')
+    setName("");
+    setImage("https://i.pravatar.cc/48");
   }
 
   return (
     <form action="" className="form-add-friend" onSubmit={handleSubmit}>
       <label htmlFor="">🧑‍🤝‍🧑Friend Name</label>
-      <input type="text" value={name} onChange={e=> setName(e.target.value)}/>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
       <label htmlFor="">🌄Image URL</label>
-      <input type="text" value={image} onChange={e=> setImage(e.target.value)}/>
+      <input
+        type="text"
+        value={image}
+        onChange={(e) => setImage(e.target.value)}
+      />
 
-    <Button>Submit</Button>
+      <Button>Submit</Button>
     </form>
   );
 }
 
-function FormSplitBill({selectFriend}) {
+function FormSplitBill({ selectFriend, onSplitBill }) {
+  const [bill, setBill] = useState("");
+  const [payByUser, setPayByUser] = useState("");
+  const [whoIsPaying, setWhoIsPaying] = useState("user");
+  const payByFriend = bill ? bill - payByUser : "";
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!bill || !payByUser) return;
+    onSplitBill(whoIsPaying === "user" ? payByFriend : -payByUser);
+  }
+
   return (
-    <form action="" className="form-split-bill">
+    <form action="" className="form-split-bill" onSubmit={handleSubmit}>
       <h2>Split a bill with {selectFriend.name}</h2>
 
       <label htmlFor="">💰Bill value</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={bill}
+        onChange={(e) => setBill(e.target.value)}
+      />
 
       <label htmlFor="">🧍Your expense</label>
-      <input type="text" />
+      <input
+        type="text"
+        value={payByUser}
+        onChange={(e) =>
+          setPayByUser(
+            Number(e.target.value) > bill ? payByUser : Number(e.target.value)
+          )
+        }
+      />
 
       <label htmlFor="">🧑‍🤝‍🧑 {selectFriend.name}'s expense</label>
-      <input type="text" />
+      <input type="text" value={payByFriend} readOnly />
 
       <label htmlFor="">🤑Who is paying the bill</label>
-      <select name="" id="">
+      <select
+        name=""
+        id=""
+        value={whoIsPaying}
+        onChange={(e) => setWhoIsPaying(e.target.value)}
+      >
         <option value="user">You</option>
         <option value="friend">{selectFriend.name}</option>
       </select>
