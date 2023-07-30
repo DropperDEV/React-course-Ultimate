@@ -1,4 +1,6 @@
 import { useState } from "react";
+import PropTypes from "prop-types"
+
 
 const containerStyle = {
   display: "flex",
@@ -9,6 +11,15 @@ const containerStyle = {
 const starCointainerStyle = {
   display: "flex",
 };
+
+StarRating.propTypes = {
+  maxRating: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  message: PropTypes.string,
+  onMovieRating: PropTypes.func,
+  defaultRating: PropTypes.number
+}
 
 export default function StarRating({
   maxRating = 5,
@@ -51,6 +62,7 @@ export default function StarRating({
             onHoverOut={() => handleHoverOut(0)}
             color={color}
             size={size}
+            key={i}
           />
         ))}
       </div>
