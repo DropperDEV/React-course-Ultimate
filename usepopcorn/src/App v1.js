@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const tempMovieData = [
   {
@@ -47,19 +47,12 @@ const tempWatchedData = [
   },
 ];
 
-const KEY = "6e1580af";
-
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  useEffect(function (){
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=Pulp Fiction`)
-    .then((res) => res.json())
-    .then((data) => setMovies(data.Search))
-  }, [])
+  const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
 
   return (
     <>
@@ -82,7 +75,7 @@ export default function App() {
 }
 
 function Header({ children }) {
-  return <nav className="nav-bar">{children}</nav>;
+  return <nav className="nav-bar"></nav>;
 }
 
 function Logo() {
