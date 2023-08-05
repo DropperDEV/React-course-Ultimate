@@ -55,22 +55,56 @@ const average = (arr) =>
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsloading] = useState(false);
+  const [query, setQuery] = useState("Pulp fiction")
+  const [error, setError] = useState("");
+
+ /* useEffect(function () {
+    console.log("After initial render")
+  },[])
+  useEffect(function(){
+    console.log("After every render")
+  })
   useEffect(function (){
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=Pulp Fiction`)
-    .then((res) => res.json())
-    .then((data) => setMovies(data.Search))
-  }, [])
+    console.log("D")
+  },[query])
+  console.log("During the render")*/
+
+  useEffect(function () {
+    async function fetchMovies() {
+      try {
+        setIsloading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+        if (!res.ok)
+          throw new Error("Something went wrong with fetching movies");
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("Movie not found")
+        setMovies(data.Search);
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message);
+      } finally {
+        setIsloading(false);
+      }
+    }
+
+    fetchMovies();
+  }, [query]);
 
   return (
     <>
       <Header>
         <Logo />
-        <SearchBox />
+        <SearchBox query={query} setQuery={setQuery}/>
         <NumResult movies={movies} />
       </Header>
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {isLoading && <Loader />}
+          {error && <ErrorMessage message={error} />}
+          {!error && !isLoading && <MovieList movies={movies} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
@@ -78,6 +112,20 @@ export default function App() {
         </Box>
       </Main>
     </>
+  );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      {" "}
+      <span>🛑</span>
+      {message}
+    </p>
   );
 }
 
@@ -94,8 +142,7 @@ function Logo() {
   );
 }
 
-function SearchBox() {
-  const [query, setQuery] = useState("");
+function SearchBox({query,setQuery}) {
 
   return (
     <input
