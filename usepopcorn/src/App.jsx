@@ -59,6 +59,10 @@ export default function App() {
     setSelectedId(null);
   }
 
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+
   return (
     <>
       <Header>
@@ -84,6 +88,7 @@ export default function App() {
               selectedId={selectedId}
               setSelectedId={setSelectedId}
               onHandleOnCloseDetails={handleOnCloseDetails}
+              onHandleAddWatched={handleAddWatched}
             />
           ) : (
             <>
@@ -187,9 +192,14 @@ function Movie({ movie, onHandleSelectId }) {
   );
 }
 
-function MovieDetails({ selectedId, onHandleOnCloseDetails }) {
+function MovieDetails({
+  selectedId,
+  onHandleOnCloseDetails,
+  onHandleAddWatched,
+}) {
   const [movie, setMovie] = useState([]);
   const [isLoading, setIsLoading] = useState("");
+  const [userRating, setUserRating] = useState('');
   const {
     Actors: actors,
     Director: director,
@@ -218,34 +228,63 @@ function MovieDetails({ selectedId, onHandleOnCloseDetails }) {
     },
     [selectedId]
   );
+
+  function handleAdd() {
+    const NewWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+    };
+
+    onHandleAddWatched(NewWatchedMovie);
+    onHandleOnCloseDetails(true)
+  }
   return (
     <div className="details">
-      {isLoading ? <Loader/> : <> <header>
-        <button className="btn-back" onClick={onHandleOnCloseDetails}>
-          &larr;
-        </button>
-        <img src={poster} alt={`Poster of ${movie}`} />
-        <div className="details-overview">
-          <h2>{title}</h2>
-          <p>
-            {released} &bull; {runtime}
-          </p>
-          <p>{genre}</p>
-          <p>
-            <span>⭐</span> {imdbRating} IMDb rating
-          </p>
-        </div>
-      </header>
-      <section>
-        <div className="rating">
-          <StarRating size={24} maxRating={10} />
-        </div>
-        <p>
-          <em>{plot}</em>
-        </p>
-        <p>Starring {actors}</p>
-        <p>Directed by {director} </p>
-      </section></>}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          {" "}
+          <header>
+            <button className="btn-back" onClick={onHandleOnCloseDetails}>
+              &larr;
+            </button>
+            <img src={poster} alt={`Poster of ${movie}`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐</span> {imdbRating} IMDb rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <div className="rating">
+              <StarRating
+                size={24}
+                maxRating={10}
+                onSetRating={setUserRating}
+              />
+              {userRating > 0 && <button className="btn-add" onClick={handleAdd}>
+                + Add to list
+              </button>}
+            </div>
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director} </p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
@@ -292,8 +331,8 @@ function WatchedMovieList({ watched }) {
 function WatchedMovie({ movie }) {
   return (
     <li key={movie.imdbID}>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
