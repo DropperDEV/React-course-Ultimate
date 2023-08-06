@@ -51,6 +51,10 @@ export default function App() {
     },
     [query]
   );
+  useEffect(function () {
+    if(selectedId === null) 
+    document.title = `usePopcorn`;
+  }, [selectedId])
 
   function handleSetId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -241,6 +245,16 @@ function MovieDetails({
     },
     [selectedId]
   );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+    },
+    [title]
+  );
+
+
 
   function handleAdd() {
     const NewWatchedMovie = {
