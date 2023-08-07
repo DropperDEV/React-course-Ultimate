@@ -11,7 +11,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsloading] = useState(false);
-  const [query, setQuery] = useState("Avengers");
+  const [query, setQuery] = useState("");
   const [error, setError] = useState("");
 
   /* useEffect(function () {
@@ -27,34 +27,40 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function fetchMovies() {
         try {
           setIsloading(true);
+          setError("");
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
           if (!res.ok)
             throw new Error("Something went wrong with fetching movies");
           const data = await res.json();
           if (data.Response === "False") throw new Error("Movie not found");
           setMovies(data.Search);
-          console.log(data.Search);
+          setError("");
         } catch (err) {
-          console.error(err.message);
-          setError(err.message);
+          if (err.name !== "AbortError") {
+            console.log(err.message);
+            setError(err.message);
+          }
         } finally {
           setIsloading(false);
         }
       }
 
       fetchMovies();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
-  useEffect(function () {
-    if(selectedId === null) 
-    document.title = `usePopcorn`;
-  }, [selectedId])
 
   function handleSetId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -216,7 +222,6 @@ function MovieDetails({
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRating;
-  console.log(isWatched);
   const {
     Actors: actors,
     Director: director,
@@ -250,11 +255,13 @@ function MovieDetails({
     function () {
       if (!title) return;
       document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+      };
     },
     [title]
   );
-
-
 
   function handleAdd() {
     const NewWatchedMovie = {
@@ -270,6 +277,24 @@ function MovieDetails({
     onHandleAddWatched(NewWatchedMovie);
     onHandleOnCloseDetails(true);
   }
+
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onHandleOnCloseDetails();
+          console.log("CLOSING");
+        }
+      }
+
+      document.addEventListener("keydown", callback);
+
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onHandleOnCloseDetails]
+  );
   return (
     <div className="details">
       {isLoading ? (
