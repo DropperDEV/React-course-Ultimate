@@ -4,12 +4,9 @@ import "./App.css";
 export default function App() {
   const [bill, setBill] = useState(0);
 
-  // Array to keep track of selected percentages
   const [percentages, setPercentages] = useState([]);
 
-  // Function to handle adding a percentage based on the identifier
   const handleAddPercentage = (identifier, value) => {
-    // Limiting to 2 PercentageInput components (identifiers 0 and 1)
     if (identifier >= 0 && identifier <= 1) {
       setPercentages((prevPercentages) => {
         const updatedPercentages = [...prevPercentages];
