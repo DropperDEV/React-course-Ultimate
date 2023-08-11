@@ -16,9 +16,8 @@ export default function App() {
         );
         const data = await res.json();
         console.log(data.rates);
-        const value = await data.rates[to];
 
-        setOutPut(value);
+        setOutPut(data.rates[to]);
         setIsLoading(false);
       }
       if (from === to) return setOutPut(amount);

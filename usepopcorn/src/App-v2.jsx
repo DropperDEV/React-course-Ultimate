@@ -8,28 +8,22 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched")
-    return JSON.parse(storedValue)
-  })
+  const [watched, setWatched] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsloading] = useState(false);
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
 
-  function handleSetId(id) {
-    setSelectedId((selectedId) => (id === selectedId ? null : id));
-  }
-  function handleOnCloseDetails() {
-    setSelectedId(null);
-  }
-
-  function handleAddWatched(movie) {
-    setWatched((watched) => [...watched, movie]);
-  }
-  function handleDeleteWatched(id) {
-    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
-  }
+  /* useEffect(function () {
+    console.log("After initial render")
+  },[])
+  useEffect(function(){
+    console.log("After every render")
+  })
+  useEffect(function (){
+    console.log("D")
+  },[query])
+  console.log("During the render")*/
 
   useEffect(
     function () {
@@ -63,8 +57,8 @@ export default function App() {
         setError("");
         return;
       }
-
-      handleOnCloseDetails();
+      
+      handleOnCloseDetails()
       fetchMovies();
 
       return function () {
@@ -74,12 +68,20 @@ export default function App() {
     [query]
   );
 
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
+  function handleSetId(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+  function handleOnCloseDetails() {
+    setSelectedId(null);
+  }
+
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
+  function handleDeleteWatched(id) {
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
+  }
+
   return (
     <>
       <Header>
@@ -239,8 +241,6 @@ function MovieDetails({
     imdbRating,
   } = movie;
 
-  //if (imdbRating > 8) [isTop,setIsTop] = useState(true) that create  a order em
-  //if (imdbRating > 8) return <p>Greatest ever!</p>
   useEffect(
     function () {
       async function getMovieDetails() {
