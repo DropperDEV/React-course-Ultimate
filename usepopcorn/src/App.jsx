@@ -152,6 +152,9 @@ function Logo() {
 }
 
 function SearchBox({ query, setQuery }) {
+  
+
+
   return (
     <input
       className="search"
