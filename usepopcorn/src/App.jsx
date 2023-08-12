@@ -1,21 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
-
+import { useMovie } from "./useMovie";
 const KEY = "6e1580af";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(function () {
     const storedValue = localStorage.getItem("watched");
     return JSON.parse(storedValue);
   });
   const [selectedId, setSelectedId] = useState(null);
-  const [isLoading, setIsloading] = useState(false);
   const [query, setQuery] = useState("");
-  const [error, setError] = useState("");
+  const { movies, error, isLoading } = useMovie(query);
 
   function handleSetId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -30,49 +28,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      const controller = new AbortController();
-
-      async function fetchMovies() {
-        try {
-          setIsloading(true);
-          setError("");
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-          if (!res.ok)
-            throw new Error("Something went wrong with fetching movies");
-          const data = await res.json();
-          if (data.Response === "False") throw new Error("Movie not found");
-          setMovies(data.Search);
-          setError("");
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            console.log(err.message);
-            setError(err.message);
-          }
-        } finally {
-          setIsloading(false);
-        }
-      }
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-
-      handleOnCloseDetails();
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
 
   useEffect(
     function () {
@@ -256,6 +211,15 @@ function MovieDetails({
     imdbRating,
   } = movie;
 
+  const countRef = useRef(0);
+
+  useEffect(
+    function () {
+      if (userRating) countRef.current = countRef.current + 1;
+    },
+    [userRating]
+  );
+
   //if (imdbRating > 8) [isTop,setIsTop] = useState(true) that create  a order em
   //if (imdbRating > 8) return <p>Greatest ever!</p>
   useEffect(
@@ -286,21 +250,6 @@ function MovieDetails({
     [title]
   );
 
-  function handleAdd() {
-    const NewWatchedMovie = {
-      imdbID: selectedId,
-      title,
-      year,
-      poster,
-      imdbRating: Number(imdbRating),
-      runtime: Number(runtime.split(" ").at(0)),
-      userRating,
-    };
-
-    onHandleAddWatched(NewWatchedMovie);
-    onHandleOnCloseDetails(true);
-  }
-
   useEffect(
     function () {
       function callback(e) {
@@ -318,6 +267,22 @@ function MovieDetails({
     },
     [onHandleOnCloseDetails]
   );
+
+  function handleAdd() {
+    const NewWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+      countRatingDecisions: countRef.current,
+    };
+
+    onHandleAddWatched(NewWatchedMovie);
+    onHandleOnCloseDetails(true);
+  }
   return (
     <div className="details">
       {isLoading ? (
@@ -327,7 +292,7 @@ function MovieDetails({
           {" "}
           <header>
             <button className="btn-back" onClick={onHandleOnCloseDetails}>
-              &larr;
+              &larr;d
             </button>
             <img src={poster} alt={`Poster of ${movie}`} />
             <div className="details-overview">
