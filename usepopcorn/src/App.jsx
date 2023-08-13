@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovie } from "./useMovie";
+import { useLocalStorageState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 const KEY = "6e1580af";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 export default function App() {
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
   const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState("");
   const { movies, error, isLoading } = useMovie(query);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function handleSetId(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -29,12 +28,6 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
   return (
     <>
       <Header>
@@ -55,7 +48,25 @@ export default function App() {
           )}
         </Box>
         <Box>
-          {selectedId ? (
+          {watched ? (
+            selectedId ? (
+              <MovieDetails
+                selectedId={selectedId}
+                setSelectedId={setSelectedId}
+                onHandleOnCloseDetails={handleOnCloseDetails}
+                onHandleAddWatched={handleAddWatched}
+                watched={watched}
+              />
+            ) : (
+              <>
+                <WatchedSummary watched={watched} />
+                <WatchedMovieList
+                  watched={watched}
+                  onHandleDeleteWatched={handleDeleteWatched}
+                />
+              </>
+            )
+          ) : (
             <MovieDetails
               selectedId={selectedId}
               setSelectedId={setSelectedId}
@@ -63,15 +74,6 @@ export default function App() {
               onHandleAddWatched={handleAddWatched}
               watched={watched}
             />
-          ) : (
-            <>
-              {" "}
-              <WatchedSummary watched={watched} />
-              <WatchedMovieList
-                watched={watched}
-                onHandleDeleteWatched={handleDeleteWatched}
-              />{" "}
-            </>
           )}
         </Box>
       </Main>
@@ -108,20 +110,11 @@ function Logo() {
 
 function SearchBox({ query, setQuery }) {
   const inputEl = useRef(null);
-  useEffect(
-    function () {
-      function callback(e) {
-        if (document.activeElement === inputEl.current) return;
-
-        if (e.code === "Enter") {
-          inputEl.current.focus();
-          setQuery("");
-        }
-      }
-      return document.addEventListener("keydown", callback);
-    },
-    [setQuery]
-  );
+  useKey("Enter", function () {
+    if (document.activeElement === inputEl.current) return;
+    inputEl.current.focus();
+    setQuery("");
+  });
 
   return (
     <input
@@ -157,7 +150,7 @@ function Box({ children }) {
   );
 }
 
-function MovieList({ movies, onHandleSelectId, onHandleOnCloseDetails }) {
+function MovieList({ movies, onHandleSelectId }) {
   return (
     <ul className="list list-movies">
       {movies?.map((movie) => (
@@ -250,23 +243,10 @@ function MovieDetails({
     [title]
   );
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === "Escape") {
-          onHandleOnCloseDetails();
-          console.log("CLOSING");
-        }
-      }
-
-      document.addEventListener("keydown", callback);
-
-      return function () {
-        document.removeEventListener("keydown", callback);
-      };
-    },
-    [onHandleOnCloseDetails]
-  );
+  useKey("Escape", function () {
+    onHandleOnCloseDetails();
+    console.log("CLOSING");
+  });
 
   function handleAdd() {
     const NewWatchedMovie = {
