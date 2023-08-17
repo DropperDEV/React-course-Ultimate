@@ -1,6 +1,6 @@
 import React from "react";
 
-class Count extends React.Component {
+class Counter extends React.Component {
   constructor(props) {
     super(props);
 
@@ -39,4 +39,4 @@ class Count extends React.Component {
   }
 }
 
-export default Count;
+export default Counter;
