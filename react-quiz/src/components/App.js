@@ -8,6 +8,7 @@ import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
 import FinishScreen from "./FinishScreen";
+import RestartButton from "./RestartButton";
 
 const intialState = {
   questions: [],
@@ -51,16 +52,16 @@ function reducer(state, action) {
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
       };
+    case "restart":
+      return { ...state, status: "ready", index: 0, points: 0, answer: null };
     default:
       throw new Error("Action unknown");
   }
 }
 
 export default function App() {
-  const [{ questions, index, status, answer, points, highscore }, dispatch, ] = useReducer(
-    reducer,
-    intialState
-  );
+  const [{ questions, index, status, answer, points, highscore }, dispatch] =
+    useReducer(reducer, intialState);
   const maxPossiblePoints = questions.reduce(
     (prev, cur) => prev + cur.points,
     0
@@ -105,7 +106,14 @@ export default function App() {
           </>
         )}
         {status === "finished" && (
-          <FinishScreen maxPossiblePoints={maxPossiblePoints} points={points} highscore={highscore} />
+          <>
+            <FinishScreen
+              maxPossiblePoints={maxPossiblePoints}
+              points={points}
+              highscore={highscore}
+            />
+            <RestartButton dispatch={dispatch} />
+          </>
         )}
       </Main>
     </div>
