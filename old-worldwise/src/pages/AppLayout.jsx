@@ -6,7 +6,7 @@ import Map from './../components/Map';
 export default function AppLayout() {
   return (
     <div className={styles.app}>
-      <Sidebar/>
+      <Sidebar />
       <Map/>
     </div>
   );

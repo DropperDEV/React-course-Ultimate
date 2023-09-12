@@ -9,7 +9,6 @@ export default function Sidebar() {
       <Logo />
       <AppNav />
 
-      <p>List of cities</p>
       <Footer/>
     </div>
   );
