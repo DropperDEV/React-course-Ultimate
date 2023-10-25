@@ -1,7 +1,8 @@
 /* eslint-disable react/prop-types */
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const CitiesContext = createContext();
+
 const BASE_URL = "http://localhost:9000";
 
 function CitiesProvider({ children }) {
@@ -23,6 +24,7 @@ function CitiesProvider({ children }) {
     }
     fetchCities();
   }, []);
+
   return (
     <CitiesContext.Provider value={{ cities, isLoading }}>
       {children}
@@ -30,4 +32,11 @@ function CitiesProvider({ children }) {
   );
 }
 
-export default { CitiesProvider, CitiesContext };
+function useCities () {
+  const value = useContext(CitiesContext);
+  if (value === undefined) throw new Error('Used CitiesContext outside of Provider. The context can only be used in children of the Provider');
+  return value;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { CitiesProvider, useCities };
