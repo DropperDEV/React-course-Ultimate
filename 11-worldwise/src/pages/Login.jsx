@@ -1,17 +1,34 @@
-import { Link } from 'react-router-dom'
 import styles from "./Login.module.css";
-import { useState } from 'react'
+import { useEffect, useState } from "react";
 import PageNav from "../components/PageNav";
-
+import { useAuth } from "../contexts/FakeAuthContext";
+import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   // PRE-FILL FOR DEV PURPOSES
   const [email, setEmail] = useState("jack@example.com");
   const [password, setPassword] = useState("qwerty");
 
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    login(email, password);
+  }
+
+  useEffect(
+    function () {
+      if (isAuthenticated === true) navigate("/app", {replace: true});
+    },
+    [isAuthenticated,navigate]
+  );
+
   return (
     <main className={styles.login}>
-      <PageNav/>
-      <form className={styles.form}>
+      <PageNav />
+      <form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.row}>
           <label htmlFor="email">Email address</label>
           <input
@@ -32,9 +49,7 @@ export default function Login() {
           />
         </div>
 
-        <Link to="/app" className='cta'>
-          Go to the app
-        </Link>
+        <Button type="primary">Go to the app</Button>
       </form>
     </main>
   );

@@ -49,9 +49,12 @@ function AuthProvider({ children }) {
 }
 
 function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined)
+  const value = useContext(AuthContext);
+  if (value === undefined)
     throw new Error("AuthContext was used outside AuthProvider");
+
+ return value;
+
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
