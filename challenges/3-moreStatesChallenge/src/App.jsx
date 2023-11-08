@@ -20,7 +20,7 @@ export default function App() {
 
   return (
     <main>
-      <BillInput OnBill={setBill} />
+      <BillInput setBill={setBill} />
       <PercentageInput OnAddPercent={(value) => handleAddPercentage(0, value)}>
         <p>How did you like the service?</p>
       </PercentageInput>
@@ -33,7 +33,7 @@ export default function App() {
   );
 }
 
-function BillInput({ OnBill }) {
+function BillInput({ setBill }) {
   return (
     <div>
       <p>How much was the bill?</p>
@@ -41,7 +41,7 @@ function BillInput({ OnBill }) {
         <input
           type="text"
           placeholder="insert your bill..."
-          onChange={(e) => OnBill(Number(e.target.value))}
+          onChange={(e) => setBill(Number(e.target.value))}
         />
       </div>
     </div>
@@ -62,7 +62,7 @@ function PercentageInput({ OnAddPercent, children }) {
   );
 }
 
-function Output({ bill, total, tip }) {
+function Output({ bill,tip }) {
   return <h1>{`You pay $${bill+tip} ($${bill} + ${tip}) tip`}</h1>;
 }
 
