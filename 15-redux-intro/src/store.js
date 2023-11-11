@@ -1,5 +1,5 @@
 import accountReducer from "./features/accounts/accountSlice"
-import customerReducer from "./features/accounts/customerSlice"
+import customerReducer from "./features/customers/customerSlice"
 const { createStore, combineReducers } = require("redux");
 
 
