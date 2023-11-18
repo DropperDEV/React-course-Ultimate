@@ -1,3 +1,5 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable no-unused-vars */
 
 // https://uibakery.io/regex-library/phone-number
 const isValidPhone = (str) =>
