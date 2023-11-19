@@ -5,17 +5,15 @@ import Loader from "./Loader";
 
 export default function AppLayout() {
   const navigation = useNavigation();
-  const isLoading = navigation.state === 'loading'
+  const isLoading = navigation.state === "loading";
   return (
     <div className="layout">
-      {isLoading && <Loader/>}
+      {isLoading && <Loader />}
       <div>
         {" "}
         <Header />
       </div>
-      <main>
-        <h1>Content</h1>
-      </main>
+
       <Outlet />
       <CartOverview />
     </div>
