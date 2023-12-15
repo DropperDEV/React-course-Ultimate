@@ -13,7 +13,7 @@ function Cart() {
   const username = useSelector(getUsername);
   const dispatch = useDispatch();
 
-  if(!cart.lenght) return <EmptyCart/>;
+  if(!cart.length) return <EmptyCart/>;
   return (
     <div className="px-4 py-3">
       <LinkButton to="/menu">&larr; Back to menu</LinkButton>
