@@ -1,4 +1,4 @@
-import {getAddress} from "../../services/apiGeocoding";
+import { getAddress } from "../../services/apiGeocoding";
 
 function getPosition() {
   return new Promise(function (resolve, reject) {
@@ -53,8 +53,10 @@ const userSlice = createSlice({
           (state.position = action.payload.position),
           (state.address = action.payload.address);
       })
-      .addCase(fetchAdress.rejected, (state, action) => {
-        (state.status = "error"), (state.error = action.payload.menssage);
+      .addCase(fetchAdress.rejected, (state) => {
+        (state.status = "error"),
+          (state.error =
+            "There was a problem getting your address. Make sure to fill this field!");
       }),
 });
 
